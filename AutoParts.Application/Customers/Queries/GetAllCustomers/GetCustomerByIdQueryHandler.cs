@@ -17,10 +17,12 @@ namespace AutoParts.Application.Customers.Queries.GetAllCustomers
 
         public async Task<CustomerResponse?> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
         {
-            var customer = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var customer = await _repository.GetCustomerByIdAsync(request.Id, cancellationToken);
 
-            if (customer == null) 
-                return null;
+            if (customer == null)
+            {
+                throw new KeyNotFoundException("Cliente não foi encontrado.");
+            }
 
             return _mapper.Map<CustomerResponse>(customer);
         }

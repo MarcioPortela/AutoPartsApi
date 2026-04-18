@@ -20,9 +20,15 @@ namespace AutoParts.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Customer?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<Customer?> GetCustomerByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             return await _context.Customers.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+        }
+
+        public async Task UpdateCustomerAsync(Customer customer, CancellationToken cancellationToken)
+        {
+            _context.Customers.Update(customer);
+            await _context.SaveChangesAsync();
         }
     }
 }

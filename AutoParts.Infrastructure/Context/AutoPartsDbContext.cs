@@ -9,10 +9,12 @@ namespace AutoParts.Infrastructure.Context
             : base(options) { }
 
         public DbSet<Customer> Customers { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Customer>().HasKey(t => t.Id);
+            modelBuilder.Entity<Address>().HasKey(t => t.Id);
         }
     }
 }

@@ -1,3 +1,4 @@
+using AutoParts.Api.Middlewares;
 using AutoParts.Infrastructure;
 using AutoParts.Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,8 @@ builder.Services.AddDbContext<AutoPartsDbContext>(options =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

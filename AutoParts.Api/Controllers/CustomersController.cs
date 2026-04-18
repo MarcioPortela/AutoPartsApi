@@ -1,4 +1,6 @@
-﻿using AutoParts.Application.Customers.Commands.CreateCustomer;
+﻿using AutoParts.Application.Customers.Commands.CreateAddress;
+using AutoParts.Application.Customers.Commands.CreateCustomer;
+using AutoParts.Application.Customers.Commands.UpdateCustomer;
 using AutoParts.Application.Customers.Queries.GetAllCustomers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -47,19 +49,92 @@ namespace AutoParts.Api.Controllers
         /// <summary>
         /// Busca os detalhes de um cliente pelo ID.
         /// </summary>
-        /// <param name="id">Identificador único do cliente.</param>
+        /// <param name="customerId">Identificador único do cliente.</param>
         /// <returns>Os dados do cliente solicitado.</returns>
-        [HttpGet("{id}")]
+        [HttpGet("{customerId}")]
         [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(Guid customerId)
         {
-            var query = new GetCustomerByIdQuery(id);
+            var query = new GetCustomerByIdQuery(customerId);
             var result = await _mediator.Send(query);
 
             if (result == null) return NotFound();
 
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Atualiza os dados de um cliente pelo ID.
+        /// </summary>
+        /// /// <remarks>
+        /// Exemplo de requisição:
+        /// 
+        ///     POST /api/customers
+        ///     {
+        ///        "email": "joao@email.com",
+        ///        "phone": "11987654321"
+        ///     }
+        /// </remarks>
+        /// <param name="customerId">Identificador único do cliente.</param>
+        /// <param name="dto">Campos a serem atualizados do cliente.</param>
+        /// <response code="204">Os dados do cliente foram atualizados.</response>
+        /// <response code="404">Se o cliente com o ID fornecido não for encontrado.</response>
+        /// <response code="400">Se os dados enviados forem inválidos (Validação falhou).</response>
+        [HttpPut("{customerId}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Update(Guid customerId, [FromBody] UpdateCustomerDto dto)
+        {
+            var command = new UpdateCustomerCommand(customerId, dto.Email, dto.Phone);
+            var result = await _mediator.Send(command);
+
+            return NoContent();
+        }
+
+        /// <summary>
+        /// Cadastra um novo endereço do cliente no sistema.
+        /// </summary>
+        /// <remarks>
+        /// Exemplo de requisição:
+        /// 
+        ///     POST /api/customers
+        ///     {
+        ///        "addressName": "Casa",
+        ///        "street": "Rua da Consolação",
+        ///        "number": "999",
+        ///        "complement": "Casa 2",
+        ///        "neighborhood": "Consolação",
+        ///        "city": "São Paulo",
+        ///        "state": "SP",
+        ///        "zipCode": "01301-100"
+        ///     }
+        /// </remarks>
+        /// <param name="customerId">Identificador único do cliente ao qual o endereço será associado.</param>
+        /// <param name="dto">Dados do endereço do cliente para cadastro.</param>
+        /// <returns>Retorna o ID do endereço recém-criado.</returns>
+        /// <response code="201">Endereço criado com sucesso.</response>
+        /// <response code="400">Se os dados enviados forem inválidos (Validação falhou).</response>
+        [HttpPost("{customerId}/addresses")]
+        [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateAddress(Guid customerId, [FromBody] CreateAddressDto dto)
+        {
+            var command = new CreateAddressCommand(
+                customerId,
+                dto.AddressName,
+                dto.Street,
+                dto.Number,
+                dto.Complement,
+                dto.Neighborhood,
+                dto.City,
+                dto.State,
+                dto.ZipCode
+            );
+
+            var id = await _mediator.Send(command);
+            return Ok(id);
         }
     }
 }

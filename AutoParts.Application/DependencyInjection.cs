@@ -16,7 +16,7 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly);
 
-        services.AddAutoMapper(cfg => { }, assembly);
+        services.AddAutoMapper(configuration => { }, assembly);
 
         return services;
     }

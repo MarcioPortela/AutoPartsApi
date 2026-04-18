@@ -18,5 +18,11 @@
             Cpf = cpf;
             BirthDate = birthDate;
         }
+
+        public void Update(string email, string phone)
+        {
+            Email = email;
+            Phone = phone;
+        }
     }
 }
