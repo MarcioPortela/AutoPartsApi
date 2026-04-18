@@ -1,4 +1,5 @@
 ﻿using AutoParts.Application.Customers.Commands.CreateCustomer;
+using AutoParts.Application.Customers.Queries.GetAllCustomers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,11 +7,11 @@ namespace AutoParts.Api.Controllers
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class CustomerController : ControllerBase
+    public class CustomersController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public CustomerController(IMediator mediator)
+        public CustomersController(IMediator mediator)
         {
             _mediator = mediator;
         }
@@ -41,6 +42,24 @@ namespace AutoParts.Api.Controllers
         {
             var id = await _mediator.Send(command);
             return Ok(id);
+        }
+
+        /// <summary>
+        /// Busca os detalhes de um cliente pelo ID.
+        /// </summary>
+        /// <param name="id">Identificador único do cliente.</param>
+        /// <returns>Os dados do cliente solicitado.</returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CustomerResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var query = new GetCustomerByIdQuery(id);
+            var result = await _mediator.Send(query);
+
+            if (result == null) return NotFound();
+
+            return Ok(result);
         }
     }
 }
