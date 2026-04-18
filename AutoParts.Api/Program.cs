@@ -7,17 +7,16 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//Configure Entity Framework Core with In-Memory Database
-builder.Services.AddDbContext<AutoPartsDbContext>(options =>
-    options.UseInMemoryDatabase("AutoPartsDb"));
-
-
 // Add services to the container.
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddControllers();
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
+
+//Configure Entity Framework Core with In-Memory Database
+builder.Services.AddDbContext<AutoPartsDbContext>(options =>
+    options.UseInMemoryDatabase("AutoPartsDb"));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -41,6 +40,8 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
