@@ -77,7 +77,7 @@ namespace AutoParts.Api.Controllers
         ///     }
         /// </remarks>
         /// <param name="customerId">Identificador único do cliente.</param>
-        /// <param name="dto">Campos a serem atualizados do cliente.</param>
+        /// <param name="command">Campos a serem atualizados do cliente.</param>
         /// <response code="204">Os dados do cliente foram atualizados.</response>
         /// <response code="404">Se o cliente com o ID fornecido não for encontrado.</response>
         /// <response code="400">Se os dados enviados forem inválidos (Validação falhou).</response>
@@ -85,9 +85,9 @@ namespace AutoParts.Api.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update(Guid customerId, [FromBody] UpdateCustomerDto dto)
+        public async Task<IActionResult> Update(Guid customerId, [FromBody] UpdateCustomerCommand command)
         {
-            var command = new UpdateCustomerCommand(customerId, dto.Email, dto.Phone);
+            command.SetId(customerId);
             var result = await _mediator.Send(command);
 
             return NoContent();
@@ -112,27 +112,16 @@ namespace AutoParts.Api.Controllers
         ///     }
         /// </remarks>
         /// <param name="customerId">Identificador único do cliente ao qual o endereço será associado.</param>
-        /// <param name="dto">Dados do endereço do cliente para cadastro.</param>
+        /// <param name="command">Dados do endereço do cliente para cadastro.</param>
         /// <returns>Retorna o ID do endereço recém-criado.</returns>
         /// <response code="201">Endereço criado com sucesso.</response>
         /// <response code="400">Se os dados enviados forem inválidos (Validação falhou).</response>
         [HttpPost("{customerId}/addresses")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAddress(Guid customerId, [FromBody] CreateAddressDto dto)
+        public async Task<IActionResult> CreateAddress(Guid customerId, [FromBody] CreateAddressCommand command)
         {
-            var command = new CreateAddressCommand(
-                customerId,
-                dto.AddressName,
-                dto.Street,
-                dto.Number,
-                dto.Complement,
-                dto.Neighborhood,
-                dto.City,
-                dto.State,
-                dto.ZipCode
-            );
-
+            command.SetCustomerId(customerId);
             var id = await _mediator.Send(command);
             return Ok(id);
         }
