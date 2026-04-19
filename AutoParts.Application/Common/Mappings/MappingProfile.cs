@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using AutoParts.Application.Customers.Queries.GetAllCustomers;
+using AutoParts.Application.Customers.Queries.GetAddressesByCustomerId;
+using AutoParts.Application.Customers.Queries.GetCustomerById;
 using AutoParts.Domain.Entities;
 
 namespace AutoParts.Application.Common.Mappings
@@ -9,6 +10,7 @@ namespace AutoParts.Application.Common.Mappings
         public MappingProfile()
         {
             CreateMap<Customer, CustomerResponse>();
+            CreateMap<Address, AddressResponse>();
         }
     }
 }

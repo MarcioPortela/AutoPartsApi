@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace AutoParts.Application.Customers.Queries.GetAllCustomers
+namespace AutoParts.Application.Customers.Queries.GetCustomerById
 {
     public class GetCustomerByIdQuery : IRequest<CustomerResponse?>
     {

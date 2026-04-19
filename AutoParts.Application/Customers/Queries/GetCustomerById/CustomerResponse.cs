@@ -1,4 +1,4 @@
-﻿namespace AutoParts.Application.Customers.Queries.GetAllCustomers
+﻿namespace AutoParts.Application.Customers.Queries.GetCustomerById
 {
     public class CustomerResponse
     {

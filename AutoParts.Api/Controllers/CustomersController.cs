@@ -1,7 +1,8 @@
 ﻿using AutoParts.Application.Customers.Commands.CreateAddress;
 using AutoParts.Application.Customers.Commands.CreateCustomer;
 using AutoParts.Application.Customers.Commands.UpdateCustomer;
-using AutoParts.Application.Customers.Queries.GetAllCustomers;
+using AutoParts.Application.Customers.Queries.GetAddressesByCustomerId;
+using AutoParts.Application.Customers.Queries.GetCustomerById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -115,9 +116,11 @@ namespace AutoParts.Api.Controllers
         /// <param name="command">Dados do endereço do cliente para cadastro.</param>
         /// <returns>Retorna o ID do endereço recém-criado.</returns>
         /// <response code="201">Endereço criado com sucesso.</response>
+        /// <response code="404">Cliente não foi encontrado</response>
         /// <response code="400">Se os dados enviados forem inválidos (Validação falhou).</response>
         [HttpPost("{customerId}/addresses")]
         [ProducesResponseType(typeof(Guid), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateAddress(Guid customerId, [FromBody] CreateAddressCommand command)
         {
@@ -125,5 +128,26 @@ namespace AutoParts.Api.Controllers
             var id = await _mediator.Send(command);
             return Ok(id);
         }
+
+        /// <summary>
+        /// Busca os endereços de um cliente pelo ID.
+        /// </summary>
+        /// <param name="customerId">Identificador único do cliente.</param>
+        /// <returns>Os dados dos endereços do cliente solicitado.</returns>
+        /// <response code="200">Retorna os dados dos endereços do cliente.</response>
+        /// <response code="404">Cliente não foi encontrado</response>
+        [HttpGet("{customerId}/addresses")]
+        [ProducesResponseType(typeof(IEnumerable<AddressResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAddressesByCustomerId(Guid customerId)
+        {
+            var query = new GetAddressesByCustomerIdQuery(customerId);
+            var result = await _mediator.Send(query);
+
+            if (result == null) return NotFound();
+
+            return Ok(result);
+        }
+
     }
 }
